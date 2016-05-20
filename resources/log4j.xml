@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<!-- 滚动文件，自动记录最新日志 -->
+	<appender name="RollingFile" class="org.apache.log4j.rolling.RollingFileAppender">
+		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">  
+			<param name="FileNamePattern" value="${catalina.base}/logs/log_%d{yyyy-MM-dd-HH}.log" />
+		</rollingPolicy>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5p] %m(%c:%M:%L)[%t]%n" />
+		</layout>
+	</appender>
+	<appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5p] %m(%c:%M:%L)[%t]%n" />
+		</layout>
+	</appender>
+    <appender name="ERROR" class="org.apache.log4j.DailyRollingFileAppender">  
+        <param name="File" value="${catalina.base}/logs/errorlog.log"></param>
+        <param name="Append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+        <param name="Threshold" value="error"></param>  
+        <layout class="org.apache.log4j.PatternLayout">  
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss\} %-5p] [%t] {%c:%L}-%m%n"></param>  
+         </layout>  
+    </appender>  
+	
+	<logger additivity="true" name="java.sql.Connection">
+		<level value="debug" />
+		<appender-ref ref="RollingFile" />
+	</logger>
+	<logger additivity="true" name="java.sql.Statement">
+		<level value="debug" />
+		<appender-ref ref="RollingFile" />
+	</logger>
+	<logger additivity="true" name="java.sql.PreparedStatement">
+		<level value="debug" />
+		<appender-ref ref="RollingFile" />
+	</logger>
+	<logger additivity="true" name="java.sql.ResultSet">
+		<level value="debug" />
+		<appender-ref ref="RollingFile" />
+	</logger>
+	<root>
+		<priority value="error" />
+		<appender-ref ref="ERROR" />
+		<appender-ref ref="STDOUT" />
+	</root>
+</log4j:configuration>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.dao.SysFuncDao">
+	
+	<resultMap type="com.library.entity.SysFunc" id="sysFuncResult">
+		<id column="aiid" property="aiid"/>
+		<result column="func_key" property="funcKey"/>
+		<result column="func_name" property="funcName"/>
+		<result column="func_type" property="funcType"/>
+		<result column="url" property="url"/>
+		<result column="css" property="css"/>
+		<result column="parent_id" property="parentId"/>
+		<result column="description" property="description"/>
+		<result column="state" property="state"/>
+	</resultMap>
+	
+	<select id="getSysFuncWithRole" parameterType="int" resultMap="sysFuncResult">
+		SELECT * FROM sysfunc WHERE aiid IN(SELECT func_id FROM role2func WHERE role_id=#{roleId});
+	</select>
+	
+	<select id="getMenuSysFunc" resultMap="sysFuncResult">
+		SELECT * FROM sysfunc WHERE func_type='Menu';
+	</select>
+
+</mapper>

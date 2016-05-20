@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.dao.SystemOperateLogDao">
+	
+	<!-- keyProperty="aiid"，其中aiid代表插入的SystemOperateLog对象的主键属性。 -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="aiid" parameterType="com.library.entity.SystemOperateLog">
+		insert into operatelog(userid,sessionId,ip,url,targetObject,userAgent,acceptLanguage,operateTime,operateResult) 
+		values(#{userId},#{sessionId},#{ip},#{url},#{targetObject},#{userAgent},#{acceptLanguage},#{operateDate},#{operateResult});
+	</insert>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.dao.BookTypeDao">
+	
+	<resultMap type="com.library.domain.BookType" id="bookTypeResult">
+		<id column="id" property="id"/>
+		<result column="typeName" property="typeName"/>
+		<result column="fine" property="fine"/>
+		<result column="days" property="days"/>
+		<result column="parentId" property="parentId"/>
+		<result column="level" property="level"/>
+	</resultMap>
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" >
+		insert into booktype(typeName,fine,days,parentId,level) values(#{typeName},#{fine},#{days},#{parentId},#{level})
+	</insert>
+	
+	<sql id="includeRef">
+		id,typeName,fine,days,parentId,level
+	</sql>
+	
+	<select id="queryAll" resultMap="bookTypeResult">
+		select * from booktype
+	</select>
+
+	<select id="query" resultMap="bookTypeResult">
+		select * from booktype where id=#{id}
+	</select>
+	
+	<update id="update">
+		update booktype 
+		<trim prefix="set" prefixOverrides=",">
+			<if test="typeName!=null and typeName!=''">
+				typeName=#{typeName},
+			</if>
+			<if test="fine!=null and fine>0">
+				fine=#{fine},
+			</if>
+			<if test="days!=null and days>0">
+				days=#{days}
+			</if>
+		</trim>
+		where id=#{id}
+	</update>
+	
+	<delete id="delete">
+		delete from booktype where id=#{id}
+	</delete>
+	
+	<delete id="batchDelete">
+		delete from booktype where id in 
+		<foreach collection="array" item="ids" open="(" separator="," close=")">
+    		#{ids}
+    	</foreach>
+		
+	</delete>
+	
+	<select id="getMaxId" resultType="int">
+		select max(id) from booktype 
+	</select>
+</mapper>

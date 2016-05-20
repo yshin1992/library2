@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+例如namespace="me.gacl.mapping.userMapper"就是me.gacl.mapping(包名)+userMapper(userMapper.xml文件去除后缀)
+ -->
+<mapper namespace="com.library.dao.ManagerDao">
+    <!-- 在select标签中编写查询的SQL语句， 设置select标签的id属性为getUser，id属性值必须是唯一的，不能够重复
+    使用parameterType属性指明查询时使用的参数类型，resultType属性指明查询返回的结果集类型
+    resultType="me.gacl.domain.User"就表示将查询结果封装成一个User类的对象返回
+    User类就是users表所对应的实体类
+    -->
+    <!-- 
+        根据id查询得到一个user对象
+     -->
+     <parameterMap type="com.library.domain.Manager" id="managerParam"/>
+     
+     <resultMap type="com.library.domain.Manager" id="managerResult">
+     	<id column="manager_id" property="managerID" jdbcType="VARCHAR"/>
+     	<result column="user_name" property="userName" jdbcType="VARCHAR"/>
+     	<result column="password" property="password" jdbcType="VARCHAR" />
+     	<result column="sex" property="sex" jdbcType="VARCHAR" />
+     	<result column="telephone" property="telephone" jdbcType="VARCHAR" />
+     	<result column="email" property="email" jdbcType="VARCHAR" />
+     	<result column="role_id" property="roleId"/>
+     	<result column="create_time" property="createTime"/>
+     	<result column="status" property="status" jdbcType="TINYINT" />
+     	<result column="user_photo" property="photo" jdbcType="BLOB"  typeHandler="org.apache.ibatis.type.BlobTypeHandler"/>
+     </resultMap>
+     
+    <select id="query"  resultMap="managerResult">
+        select <include refid="selectRef"/> from manager where manager_id=#{managerID} and password=#{password} and status=0
+    </select>
+    
+    <sql id="selectRef">
+    	manager_id,user_name,sex,telephone,email,role_id,create_time,status,user_photo
+    </sql>
+    
+    <update id="update" >
+    	update manager set user_name=#{userName},sex=#{sex},telephone=#{telephone},email=#{email} where manager_id=#{managerID}
+    </update>
+    
+    <insert id="insert">
+    	insert into manager(manager_id,user_name,password,sex,telephone,email,role_id,create_time,status) values(#{managerID},#{userName},#{password},#{sex},#{telephone},#{email},1,now(),0);
+    </insert>
+    
+    <update id="delete">
+    	update manager set status=1 where manager_id=#{managerID}
+    </update>
+    
+    <update id="batchDelete">
+    	update manager set status=1 where manager_id in
+    	<foreach collection="array" item="ids" open="(" separator="," close=")">
+    		#{ids}
+    	</foreach>
+    </update>
+    
+    <update id="updatePhoto">
+    	update manager set user_photo=(#{photo,javaType=byte[], jdbcType=BLOB, typeHandler=org.apache.ibatis.type.BlobTypeHandler}) where manager_id=#{managerID};
+    </update>
+    
+    <select id="getPhoto" resultMap="managerResult">
+    	select user_photo from manager where manager_id=#{managerID}
+    </select>
+    
+    <select id="queryList" resultMap="managerResult">
+    	select <include refid="selectRef"/> from manager 
+    	<include refid="dynamicWhere"/> 
+    	<include refid="limitSql"/> 
+    </select>
+    
+    <select id="queryRecordCount" resultType="int">
+    	select count(0) from manager <include refid="dynamicWhere"/>
+    </select>
+    
+    <sql id="dynamicWhere">
+	    <if test="model != null">
+	    	<trim prefix="where" prefixOverrides="AND|OR">
+	    		<if test="fuzzy == false">
+		    		<if test="model.managerID != null and  model.managerID !='' ">
+		    			AND manager_id=#{model.managerID}
+		    		</if>
+		    		<if test="model.userName != null and  model.userName !='' ">
+		    			AND user_name=#{model.userName}
+		    		</if>
+		    		<if test="model.telephone != null and  model.telephone !='' ">
+		    			AND telephone=#{model.telephone}
+		    		</if>
+		    		<if test="model.email != null and  model.email !='' ">
+		    			AND email=#{model.email}
+		    		</if>
+		    	</if>
+		    	<if test="fuzzy == true">
+		    		<if test="model.managerID != null and  model.managerID !='' ">
+		    			AND manager_id like CONCAT(CONCAT('%',#{model.managerID}),'%')
+		    		</if>
+		    		<if test="model.userName != null and  model.userName !='' ">
+		    			AND user_name like CONCAT(CONCAT('%',#{model.userName}),'%') 
+		    		</if>
+		    		<if test="model.telephone != null and  model.telephone !='' ">
+		    			AND telephone like CONCAT(CONCAT('%',#{model.telephone}),'%')  
+		    		</if>
+		    		<if test="model.email != null and  model.email !='' ">
+		    			AND email like CONCAT(CONCAT('%',#{model.email}),'%')   
+		    		</if>
+		    	</if>
+		    	
+		    	<if test="model.sex != null and  model.sex !='' ">
+		    		AND sex=#{model.sex}
+		    	</if>
+		    	<if test="model.createTime != null and  model.createTime !='' ">
+		    		AND create_time=#{model.createTime}
+		    	</if>
+		    	<if test="model.roleId != null">
+		    		AND role_id=#{model.roleId}
+		    	</if>
+		    	<if test="model.status != null and model.status!='' ">
+		    		AND status=#{model.status}
+		    	</if>
+	    	</trim>
+	    </if>
+    </sql>
+    
+    <sql id="limitSql">
+    	limit #{startIndex},#{endIndex}
+    </sql>
+</mapper>
